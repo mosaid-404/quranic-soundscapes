@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import SurahList from '@/components/SurahList';
 import AudioPlayer from '@/components/AudioPlayer';
 import Footer from '@/components/Footer';
-import { UserCircle, Clock } from 'lucide-react';
+import { UserCircle, Clock, Bookmark } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 interface Surah {
@@ -15,7 +15,6 @@ const Index = () => {
   const [selectedSurah, setSelectedSurah] = useState<Surah | null>(null);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
 
-  // تحديث الوقت كل ثانية عندما يتم تشغيل السورة
   React.useEffect(() => {
     let interval: NodeJS.Timeout;
     
@@ -33,7 +32,6 @@ const Index = () => {
     };
   }, [selectedSurah]);
 
-  // تحويل الثواني إلى تنسيق mm:ss
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -41,37 +39,41 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen pb-24 flex flex-col">
+    <div className="min-h-screen pb-24 flex flex-col bg-gradient-to-b from-quran-dark to-quran-dark/95">
       <div className="flex-grow">
-        <header className="py-8 text-center animate-fade-in">
-          <h1 className="text-4xl font-bold text-quran-gold mb-2">القرآن الكريم</h1>
-          <h2 className="text-2xl text-quran-light/80">بصوت الشيخ محمد صديق المنشاوي</h2>
+        <header className="py-12 text-center animate-fade-in relative overflow-hidden">
+          <div className="absolute inset-0 bg-quran-gold/5 backdrop-blur-sm"></div>
+          <div className="relative z-10">
+            <h1 className="text-5xl font-bold text-quran-gold mb-4 tracking-wider">القرآن الكريم</h1>
+            <h2 className="text-2xl text-quran-light/90 font-light">بصوت الشيخ محمد صديق المنشاوي</h2>
+          </div>
         </header>
         
         <main className="container mx-auto px-4 animate-fade-in">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* معلومات الشيخ */}
-            <Card className="p-6 bg-quran-dark border-quran-gold/20">
-              <div className="flex flex-col items-center space-y-4">
-                <div className="w-32 h-32 rounded-full bg-quran-gold/10 flex items-center justify-center">
+            <Card className="p-8 bg-quran-dark/50 border-quran-gold/20 backdrop-blur-lg transform hover:scale-105 transition-all duration-300">
+              <div className="flex flex-col items-center space-y-6">
+                <div className="w-36 h-36 rounded-full bg-gradient-to-br from-quran-gold/20 to-quran-gold/5 flex items-center justify-center transform hover:rotate-12 transition-transform duration-300">
                   <UserCircle className="w-24 h-24 text-quran-gold" />
                 </div>
-                <h3 className="text-xl text-quran-gold">الشيخ محمد صديق المنشاوي</h3>
-                <p className="text-quran-light/80 text-sm">
-                  من أشهر قراء القرآن الكريم في العالم الإسلامي
+                <h3 className="text-2xl text-quran-gold font-semibold">الشيخ محمد صديق المنشاوي</h3>
+                <p className="text-quran-light/80 text-center leading-relaxed">
+                  من أشهر قراء القرآن الكريم في العالم الإسلامي، عُرف بجمال صوته وحسن أدائه
                 </p>
+                <div className="flex items-center gap-2 text-quran-gold/60">
+                  <Bookmark className="w-5 h-5" />
+                  <span>قارئ القرآن الكريم</span>
+                </div>
               </div>
             </Card>
 
-            {/* قائمة السور */}
             <div className="md:col-span-2">
               <SurahList onSelect={setSelectedSurah} />
             </div>
           </div>
 
-          {/* عداد الوقت */}
           {selectedSurah && (
-            <div className="fixed top-4 left-4 bg-quran-dark/90 p-4 rounded-lg border border-quran-gold/20 flex items-center space-x-2 backdrop-blur-sm">
+            <div className="fixed top-4 left-4 bg-quran-dark/90 p-4 rounded-lg border border-quran-gold/20 flex items-center space-x-2 backdrop-blur-sm animate-fade-in">
               <Clock className="text-quran-gold w-5 h-5" />
               <span className="text-quran-gold font-mono">{formatTime(elapsedTime)}</span>
             </div>
