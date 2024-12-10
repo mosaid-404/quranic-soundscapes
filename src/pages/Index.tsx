@@ -11,6 +11,25 @@ interface Surah {
   audioUrl: string;
 }
 
+const surahs: Surah[] = [
+  {
+    number: 1,
+    name: "سورة الفاتحة",
+    audioUrl: "https://server8.mp3quran.net/minsh/001.mp3"
+  },
+  {
+    number: 2,
+    name: "سورة البقرة",
+    audioUrl: "https://server8.mp3quran.net/minsh/002.mp3"
+  },
+  {
+    number: 3,
+    name: "سورة آل عمران",
+    audioUrl: "https://server8.mp3quran.net/minsh/003.mp3"
+  },
+  // ... يمكن إضافة المزيد من السور هنا
+];
+
 const Index = () => {
   const [selectedSurah, setSelectedSurah] = useState<Surah | null>(null);
   const [elapsedTime, setElapsedTime] = useState<number>(0);

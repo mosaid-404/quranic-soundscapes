@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Slider } from "@/components/ui/slider";
-import { Play, Pause, Volume2 } from "lucide-react";
+import { Play, Pause, Volume2, Clock } from "lucide-react";
 
 interface AudioPlayerProps {
   audioUrl: string;
@@ -11,7 +11,9 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, surahName }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [volume, setVolume] = useState(1);
+  const [volume, setVolume] = useState(0.8); // تم زيادة مستوى الصوت الافتراضي
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -20,9 +22,9 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, surahName }) => {
   }, [volume]);
 
   useEffect(() => {
-    // عند تغيير السورة، قم بإيقاف التشغيل وإعادة تعيين التقدم
     setIsPlaying(false);
     setProgress(0);
+    setCurrentTime(0);
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
     }
@@ -41,10 +43,19 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, surahName }) => {
     }
   };
 
+  const formatTime = (timeInSeconds: number) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
   const handleTimeUpdate = () => {
     if (audioRef.current) {
-      const progress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
-      setProgress(progress);
+      const current = audioRef.current.currentTime;
+      const duration = audioRef.current.duration;
+      setCurrentTime(current);
+      setDuration(duration);
+      setProgress((current / duration) * 100);
     }
   };
 
@@ -71,9 +82,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, surahName }) => {
         src={audioUrl}
         onTimeUpdate={handleTimeUpdate}
         onEnded={() => setIsPlaying(false)}
-        onLoadStart={() => console.log("بدء تحميل الصوت")}
-        onCanPlay={() => console.log("الصوت جاهز للتشغيل")}
-        onError={(e) => console.error("خطأ في تحميل الصوت:", e)}
+        onLoadedMetadata={(e) => setDuration((e.target as HTMLAudioElement).duration)}
       />
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -83,7 +92,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, surahName }) => {
           >
             {isPlaying ? <Pause size={24} /> : <Play size={24} />}
           </button>
-          <div className="text-xl text-quran-gold">{surahName}</div>
+          <div className="flex flex-col">
+            <div className="text-xl text-quran-gold">{surahName}</div>
+            <div className="flex items-center gap-2 text-quran-light/80 text-sm">
+              <Clock size={14} />
+              <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
+            </div>
+          </div>
         </div>
         <div className="flex items-center gap-4 flex-1 mx-4">
           <Slider
